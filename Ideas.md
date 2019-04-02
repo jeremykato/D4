@@ -38,8 +38,10 @@ At the beginning of execution, create a hashmap that stores `bill_hash`s for eac
 
 ## Multithreading
 
-Though each block depends on the previous block, each block already has previous block's hash. We don't need to wait for a previous block to be verified before moving on to the next one, so why not bring some extra threads along to help us out.
+Though each block depends on the previous block, each block already has previous block's hash. We don't need to wait for a previous block to be verified before moving on to the next one, so why not bring some extra threads along to help us out?
 
-Each thread is given a block to work on and the hash that the next block is using. Each thread computes their block's hash, and checks it against their block and the next block to ensure that the blockchain is valid. Note that this is compatible with caching because there is really no harm if multiple threads are reading or writing to the hashmap at the same time (even if they both write at the same time, they're doing the same values.)
+~~Each thread is given a block to work on and the hash that the next block is using. Each thread computes their block's hash, and checks it against their block and the next block to ensure that the blockchain is valid. Note that this is compatible with caching because there is really no harm if multiple threads are reading or writing to the hashmap at the same time (even if they both write at the same time, they're doing the same values.)~~
+
+I probably should've expected something dumb, but here it is: Ruby threads do not run in parallel. They do not run concurrently. They are less so threads than merely tasks performed asynchronously. For true parallel performance, we'll need to turn to hardware or C extension libraries.
 
 ## Hardware Accleration, OpenCL and other means
