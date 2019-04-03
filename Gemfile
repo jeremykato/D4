@@ -1,4 +1,5 @@
 source "https://rubygems.org"
 
-require 'narray_ffi'
-require 'opencl_ruby_ffi'
+gem 'narray_ffi'
+gem 'opencl_ruby_ffi'
+gem 'flamegraph'
