@@ -45,3 +45,7 @@ Though each block depends on the previous block, each block already has previous
 I probably should've expected something dumb, but here it is: Ruby threads do not run in parallel. They do not run concurrently. They are less so threads than merely tasks performed asynchronously. For true parallel performance, we'll need to turn to hardware or C extension libraries.
 
 ## Hardware Accleration, OpenCL and other means
+
+I found one library with a surprisingly comprehensive implementation. Programs are compiled at run-time and are pushed through whatever the current graphics device is. I'll need a machine that uses an Intel HD iGPU (since my desktop and laptop both have discrete GPUs), but it opens up before some really huge possibilities.
+
+The basics is to perform absolutely minimal operations in Ruby - load the file, setup each line of data in manner that's easy to work with in OpenCL (more or less C), and fire each off into a queue. The OpenCL devices will begin immediately executing as many as possible. This is where our bet comes into play: what's faster, the CPU, that only runs on one, extremely fast, general-purpose thread... Or multiple, slower arithmetic-optimized thread.
