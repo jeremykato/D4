@@ -1,5 +1,5 @@
 # native ruby won't let us make massive arrays, so ours is 1/10th of the size
-size = 50000000
+size = 50_000_000
 a = Array.new(size) { rand(65336) }
 b = 0
 

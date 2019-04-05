@@ -12,7 +12,7 @@ EOF
 
 puts 'Starting...'
 
-size = 500000000
+size = 500_000_000
 
 # get the current computer's device context
 platform = OpenCL::platforms.first
