@@ -3,7 +3,7 @@
 # main method - just check to make sure we
 require 'flamegraph'
 require_relative 'naive'
-html = Flamegraph.generate(graph.html) do
+html = Flamegraph.generate('graph.html') do
   if ARGV.size != 1
     puts 'Usage: ruby verifier.rb <name_of_file>'
     puts '       name_of_file = name of file to verify'
