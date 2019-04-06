@@ -33,6 +33,11 @@ class Verifier
     end
   end
 
+  def success?
+    !@abort
+  end
+
+  # @precondition: line not nil
   def verify_block(line)
     data = line.split('|')
     return unless verify_size(data.size)
@@ -43,14 +48,16 @@ class Verifier
     return unless verify_block_hash(data)
   end
 
+  # @precondition: size is integer/numeric
   def verify_size(size)
     if size != 5
-      error_out('wrong number of separators (expected: 4, actual:' + (data.size - 1).to_s + ')')
+      error_out('wrong number of separators (expected: 4, actual:' + (size - 1).to_s + ')')
       return false
     end
     true
   end
 
+  # @precondition: block_num_str is string
   def verify_block_num(block_num_str)
     begin
       block_num = Integer(block_num_str)
@@ -66,6 +73,7 @@ class Verifier
     true
   end
 
+  # @precondition: hash_str is string
   def verify_block_prev_hash(hash_str)
     begin
       hash = Integer(hash_str, 16)
@@ -80,9 +88,10 @@ class Verifier
     true
   end
 
+  # @precondition: transaction_str is string
   def verify_block_transactions(transaction_str)
     transactions = transaction_str.split(':')
-    if transactions.empty?
+    if transactions.empty? || transaction_str.empty?
       error_out('block cannot have zero transactions (expected: > 1 transaction, actual: 0)')
       return false
     end
@@ -125,6 +134,7 @@ class Verifier
     true
   end
 
+  # @precondition: time_str is string
   def verify_block_time(time_str)
     times = time_str.split('.')
     if times.size != 2
@@ -149,6 +159,7 @@ class Verifier
     true
   end
 
+  # @precondition: data_arr is array of strings
   def verify_block_hash(data_arr)
     dec_val = 0
     (0..3).each do |i|
@@ -160,11 +171,13 @@ class Verifier
     if hash != data_arr[4].strip
       error_out('block\'s listed hash did not match actual hash value '\
         '(expected: ' + hash + ', actual: ' + data_arr[4].strip + ')')
+      return false
     end
     @prev_hash = dec_val
     true
   end
 
+  # @precondition: utf8_arr is array of integers
   def bill_hash(utf8_arr)
     total = 0
     utf8_arr.each do |x|
@@ -174,6 +187,7 @@ class Verifier
     total
   end
 
+  # @precondition: error_message is a string
   def error_out(error_message)
     @abort = true
     @result_msg = 'Line ' + @cur_line.to_s + ': ' + error_message
