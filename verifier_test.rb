@@ -3,7 +3,7 @@ SimpleCov.start
 
 require 'minitest/autorun'
 
-require_relative 'naive'
+require_relative 'verify_engine'
 
 class VerifierTest < Minitest::Test
 
