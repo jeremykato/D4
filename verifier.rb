@@ -15,4 +15,4 @@ end
 # the verifier object depends on what file I've included at the top
 v = Verifier.new(ARGV[0])
 v.process
-puts p.result
+v.put_result
