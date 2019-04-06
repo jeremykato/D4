@@ -12,6 +12,7 @@ class Verifier
     @prev_hash = 0
     @coin_totals = {}
     @abort = false
+    @lookup = {}
   end
 
   def process
@@ -178,11 +179,26 @@ class Verifier
   end
 
   # @precondition: utf8_arr is array of integers
-  def bill_hash(utf8_arr)
+  def bill_hash_old(utf8_arr)
     total = 0
     utf8_arr.each do |x|
-      total += ((x**3_000) + (x**x) - (3**x)) * (7**x)
+      total += ((x.pow(3000, 65_536)) + (x.pow(x, 65_536)) - (3.pow(x, 65_536))) * (7.pow(x, 65_536))
       total = total % 65_536
+    end
+    total
+  end
+
+  def bill_hash(utf8_arr)
+    total = 0
+    num = 0
+    utf8_arr.each do |x|
+      if @lookup[x].nil?
+        num = ((x.pow(3000, 65_536)) + (x.pow(x, 65_536)) - (3.pow(x, 65_536))) * (7.pow(x, 65_536))
+        @lookup[x] = num % 65_536
+      else
+        num = @lookup[x]
+      end
+      total = (total + num) % 65_536
     end
     total
   end
