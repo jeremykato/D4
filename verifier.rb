@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 # main method - just check to make sure we
-require_relative 'verify_engine'
+require_relative 'parallel_engine'
 if ARGV.size != 1
   puts 'Usage: ruby verifier.rb <name_of_file>'
   puts '       name_of_file = name of file to verify'

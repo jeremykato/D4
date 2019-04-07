@@ -1,6 +1,7 @@
 # frozen_string_literal: true
+require 'parallel'
 
-# implementation of verifier
+# parallel implementation of verifier
 class Verifier
   def initialize(filename_p)
     @filename = filename_p
@@ -41,12 +42,21 @@ class Verifier
   # @precondition: line not nil
   def verify_block(line)
     data = line.split('|')
-    return unless verify_size(data.size)
-    return unless verify_block_num(data[0])
-    return unless verify_block_prev_hash(data[1])
-    return unless verify_block_transactions(data[2])
-    return unless verify_block_time(data[3])
-    return unless verify_block_hash(data)
+    res = true
+    Parallel.map([0,1,2,3], in_processes: 4) do |p|
+      if p == 0
+        res = false unless verify_size(data.size)
+        res = false unless verify_block_num(data[0])
+      elsif p == 1
+        res = false unless verify_block_time(data[3])
+      elsif p == 2
+        res = false unless verify_block_transactions(data[2])
+      else
+        res = false unless verify_block_prev_hash(data[1])
+        res = false unless verify_block_hash(data)
+      end
+    end
+    return unless res
   end
 
   # @precondition: size is integer/numeric
