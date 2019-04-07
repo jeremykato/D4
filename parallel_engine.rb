@@ -3,8 +3,8 @@ require 'parallel'
 
 # parallel implementation of verifier
 class Verifier
-  def initialize(filename_p)
-    @filename = filename_p
+  def initialize(lines, t_num)
+    @lines = lines
     # each variable represents data of the previous block
     # to verify that the data is valid.
     @cur_line = 0
@@ -14,10 +14,11 @@ class Verifier
     @coin_totals = {}
     @abort = false
     @lookup = {}
+    @thread = t_num
   end
 
   def process
-    File.foreach(@filename) do |line|
+    @lines.each do |line|
       verify_block(line)
       break if @abort
 
@@ -43,18 +44,16 @@ class Verifier
   def verify_block(line)
     data = line.split('|')
     res = true
-    Parallel.map([0,1,2,3], in_processes: 4) do |p|
-      if p == 0
-        res = false unless verify_size(data.size)
-        res = false unless verify_block_num(data[0])
-      elsif p == 1
-        res = false unless verify_block_time(data[3])
-      elsif p == 2
-        res = false unless verify_block_transactions(data[2])
-      else
-        res = false unless verify_block_prev_hash(data[1])
-        res = false unless verify_block_hash(data)
-      end
+    if @thread == 0
+      res = false unless verify_size(data.size)
+      res = false unless verify_block_num(data[0])
+    elsif @thread == 1
+      res = false unless verify_block_time(data[3])
+    elsif @thread == 2
+      res = false unless verify_block_transactions(data[2])
+    elsif @thread == 3
+      res = false unless verify_block_prev_hash(data[1])
+      res = false unless verify_block_hash(data)
     end
     return unless res
   end

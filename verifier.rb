@@ -11,7 +11,14 @@ elsif !File.file?(ARGV[0])
   return
 end
 
+
+Parallel.map([0,1,2,3], in_threads: 4) do |p|
 # the verifier object depends on what file I've included at the top
-v = Verifier.new(ARGV[0])
-v.process
-v.put_result
+  v = Verifier.new(IO.readlines(ARGV[0]), p)
+  v.process
+  if !v.success?
+    v.put_result
+  elsif p == 2
+    v.put_result
+  end
+end

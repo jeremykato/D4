@@ -16,7 +16,7 @@ class Verifier
   end
 
   def process
-    File.foreach(@filename) do |line|
+    File.readlines(@filename).each do |line|
       verify_block(line)
       break if @abort
 
