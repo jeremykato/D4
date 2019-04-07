@@ -1,4 +1,5 @@
 # frozen_string_literal: true
+
 require 'parallel'
 
 # parallel implementation of verifier
@@ -44,7 +45,7 @@ class Verifier
   def verify_block(line)
     data = line.split('|')
     res = true
-    if @thread == 0
+    if @thread.zero?
       res = false unless verify_size(data.size)
       res = false unless verify_block_num(data[0])
     elsif @thread == 1
@@ -138,7 +139,7 @@ class Verifier
       if @coin_totals[key].negative? && key != 'SYSTEM'
         error_out('address ' + key.to_s + ' had a negative balance'\
           '(expected: positive balance, actual: ' + @coin_totals[key].to_s + ')')
-          return false
+        return false
       end
     end
     true
@@ -193,7 +194,7 @@ class Verifier
     num = 0
     utf8_arr.each do |x|
       if @lookup[x].nil?
-        num = ((x.pow(3000, 65_536)) + (x.pow(x, 65_536)) - (3.pow(x, 65_536))) * (7.pow(x, 65_536))
+        num = (x.pow(3000, 65_536) + x.pow(x, 65_536) - 3.pow(x, 65_536)) * 7.pow(x, 65_536)
         @lookup[x] = num % 65_536
       else
         num = @lookup[x]
