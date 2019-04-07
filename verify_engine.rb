@@ -179,15 +179,6 @@ class Verifier
   end
 
   # @precondition: utf8_arr is array of integers
-  def bill_hash_old(utf8_arr)
-    total = 0
-    utf8_arr.each do |x|
-      total += ((x.pow(3000, 65_536)) + (x.pow(x, 65_536)) - (3.pow(x, 65_536))) * (7.pow(x, 65_536))
-      total = total % 65_536
-    end
-    total
-  end
-
   def bill_hash(utf8_arr)
     total = 0
     num = 0
