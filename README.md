@@ -1,3 +1,10 @@
-# Installation Information
+# CS 1632 Deliverable 4: Performance Testing
 
-Simply run `bundle install` as normal, and try testing if `addition_example_opencl.rb` runs correctly. It should add a large array of random integers together (mod 653356) and display the time taken alongside the result. As long as no errors appear, everything should be a-okay!
+## Info
+
+Jeremy Kato & Danielle Moonah
+MW @ 1pm Period
+
+## Installation
+
+Run `bundle install` to install the appropriate gems. If there are any errors, try `gem install` on any libraries that cause issues.
