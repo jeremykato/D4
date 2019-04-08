@@ -80,9 +80,14 @@ class VerifierTest < Minitest::Test
     assert v.verify_block_transactions('SYSTEM>281974(100)')
   end
 
-  def test_verify_block_transactions_invalid_format
+  def test_verify_block_transactions_invalid_format1
     v = Verifier.new(nil, 0)
     assert !v.verify_block_transactions('SYSTEM>281974(100')
+  end
+
+  def test_verify_block_transactions_invalid_format2
+    v = Verifier.new(nil, 0)
+    assert !v.verify_block_transactions('SYSTEM>281974()100')
   end
 
   def test_verify_block_transactions_zero_transactions
