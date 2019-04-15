@@ -4,165 +4,53 @@ SimpleCov.start
 require 'minitest/autorun'
 require 'parallel'
 require_relative 'parallel_engine'
+require_relative 'verifier'
 
 class VerifierTest < Minitest::Test
 
-  def test_error_out_behavior
-    v = Verifier.new(nil, 0)
-    v.error_out('example error message')
-    assert_output(/Line 0: example error message\nBLOCKCHAIN INVALID/) { v.put_result }
+  def test_no_params
+    ARGV.clear
+    assert_output("Usage: ruby verifier.rb <name_of_file>
+       name_of_file = name of file to verify\n") { main }
   end
 
-  def test_bill_hash_char
-    v = Verifier.new(nil, 0)
-    assert_equal(v.bill_hash('a'.unpack('U*')), 6425)
+  def test_invalid_file
+    ARGV[0] = 'gji3qgjiwgn``riwgnrwgn0rgn0qg0nqg' # this might work if you make this file on your computer
+    assert_output("Error: File was not found.\n") { main }
   end
 
-  def test_bill_hash_arr
-    v = Verifier.new(nil, 0)
-    str = '0|0|SYSTEM>281974(100)|1553188611.560418000'
-    assert_equal(v.bill_hash(str.unpack('U*')), '6283'.to_i(16)) 
-  end
-
-  def test_bill_hash_empty_arr
-    v = Verifier.new(nil, 0)
-    str = ''
-    assert_equal(v.bill_hash(str.unpack('U*')), 0)
-  end
-
-  def test_verify_block_hash_correct_match
-    v = Verifier.new(nil, 0)
-    data = Array.new
-    data[0] = '0'
-    data[1] = '0'
-    data[2] = 'SYSTEM>281974(100)'
-    data[3] = '1553188611.560418000'
-    data[4] = '6283'
-    assert v.verify_block_hash(data)
-  end
-
-  def test_verify_block_hash_wrong_match
-    v = Verifier.new(nil, 0)
-    data = Array.new
-    data[0] = '0'
-    data[1] = '0'
-    data[2] = 'SYSTEM>281974(100)'
-    data[3] = '1553188611.560418000'
-    data[4] = '62a3'
-    assert !v.verify_block_hash(data)
-  end
-
-  def test_verify_block_time_valid_time
-    v = Verifier.new(nil, 0)
-    assert v.verify_block_time('100.200')
-    assert v.verify_block_time('200.200')
-    assert v.verify_block_time('200.201')
-  end
-
-  def test_verify_block_time_invalid_time
-    v = Verifier.new(nil, 0)
-    assert v.verify_block_time('100.200')
-    assert !v.verify_block_time('100.200')
-  end
-
-  def test_verify_block_time_invalid_format
-    v = Verifier.new(nil, 0)
-    assert !v.verify_block_time('100200')
-  end
-
-  def test_verify_block_time_negative_time
-    v = Verifier.new(nil, 0)
-    assert !v.verify_block_time('-100.200')
-  end
-
-  def test_verify_block_transactions_valid
-    v = Verifier.new(nil, 0)
-    assert v.verify_block_transactions('SYSTEM>281974(100)')
-  end
-
-  def test_verify_block_transactions_invalid_format
-    v = Verifier.new(nil, 0)
-    assert !v.verify_block_transactions('SYSTEM>281974(100')
-  end
-
-  def test_verify_block_transactions_zero_transactions
-    v = Verifier.new(nil, 0)
-    assert !v.verify_block_transactions('')
-  end
-
-  def test_verify_block_transactions_negative_balance
-    v = Verifier.new(nil, 0)
-    assert !v.verify_block_transactions('123456>281974(100)')
-  end
-
-  def test_verify_block_transactions_invalid_recipient_address
-    v = Verifier.new(nil, 0)
-    assert !v.verify_block_transactions('SYSTEM>2974(100)')
-  end
-
-  def test_verify_block_transactions_invalid_sender_address
-    v = Verifier.new(nil, 0)
-    assert !v.verify_block_transactions('1234>297324(100)')
-  end
-
-  def test_verify_block_transactions_invalid_amount_sent
-    v = Verifier.new(nil, 0)
-    assert !v.verify_block_transactions('SYSTEM>297324(-100)')
-  end
-
-  def test_verify_block_prev_hash_valid
-    v = Verifier.new(nil, 0)
-    data = Array.new
-    data[0] = '0'
-    data[1] = '0'
-    data[2] = 'SYSTEM>281974(100)'
-    data[3] = '1553188611.560418000'
-    data[4] = '6283'
-    assert v.verify_block_hash(data)
-    assert v.verify_block_prev_hash('6283')
-  end
-
-  def test_verify_block_prev_hash_invalid_mismatch
-    v = Verifier.new(nil, 0)
-    data = Array.new
-    data[0] = '0'
-    data[1] = '0'
-    data[2] = 'SYSTEM>281974(100)'
-    data[3] = '1553188611.560418000'
-    data[4] = '6283'
-    assert v.verify_block_hash(data)
-    assert !v.verify_block_prev_hash('6233')
-  end
-
-  def test_verify_block_prev_hash_invalid_prev_hash
-    v = Verifier.new(nil, 0)
-    data = Array.new
-    data[0] = '0'
-    data[1] = '0'
-    data[2] = 'SYSTEM>281974(100)'
-    data[3] = '1553188611.560418000'
-    data[4] = '6283'
-    assert v.verify_block_hash(data)
-    assert !v.verify_block_prev_hash('qqqq')
-  end
-
-  def test_verify_block_size_valid
-    v = Verifier.new(nil, 0)
-    assert v.verify_size(5)
-  end
-
-  def test_verify_block_size_invalid
-    v = Verifier.new(nil, 0)
-    assert !v.verify_size(4)
-  end
-
-  # verify block gets less tests since we already test
-  # its other methods above
-  def test_100_txt
-    [0, 1, 2, 3].each do |p|
-      v = Verifier.new(IO.readlines('input/100.txt'), p)
-      v.process
-      assert v.success?
-    end
+  def test_file_100
+    ARGV[0] = 'input/100.txt'
+    assert_output("006586: 173 billcoins
+008138: 525 billcoins
+012121: 339 billcoins
+050781: 123 billcoins
+087095: 474 billcoins
+167373: 522 billcoins
+187174: 313 billcoins
+195507: 531 billcoins
+217151: 538 billcoins
+226216: 284 billcoins
+245537: 342 billcoins
+268241: 227 billcoins
+281974: 338 billcoins
+326904: 275 billcoins
+335830: 173 billcoins
+338036: 262 billcoins
+357621: 525 billcoins
+360314: 423 billcoins
+363709: 235 billcoins
+443914: 86 billcoins
+495699: 131 billcoins
+548603: 340 billcoins
+562872: 275 billcoins
+669488: 162 billcoins
+685223: 562 billcoins
+736126: 376 billcoins
+758620: 349 billcoins
+778010: 468 billcoins
+814708: 311 billcoins
+933987: 318 billcoins
+") { main }
   end
 end

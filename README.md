@@ -8,3 +8,7 @@ MW @ 1pm Period
 ## Installation
 
 Run `bundle install` to install the appropriate gems. If there are any errors, try `gem install` on any libraries that cause issues.
+
+# Testing Notes
+
+Code coverage will be off for parallel engine if you run verifier_test.rb first - the tests for parallel engine are in parallel_engine_test.rb, and that will produce the correct code coverage.
