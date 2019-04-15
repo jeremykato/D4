@@ -112,6 +112,10 @@ class Verifier
         return false
       end
       addr_amt = t.split('(')
+      if addr_amt.size != 2
+        error_out('incorrect format in transaction (expected: \'(\', actual: not found)')
+        return false
+      end
       addr_amt[1] = addr_amt[1].tr(')', '')
       addresses = addr_amt[0].split('>')
       if addresses[0].size != 6
