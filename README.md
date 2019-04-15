@@ -12,3 +12,7 @@ Run `bundle install` to install the appropriate gems. If there are any errors, t
 # Testing Notes
 
 Code coverage will be off for parallel engine if you run verifier_test.rb first - the tests for parallel engine are in parallel_engine_test.rb, and that will produce the correct code coverage.
+
+# Flamegraph Note
+
+Flamegraph is not in the release version as it slows execution - see previous commits to see flamegraph usage if you're curious!
